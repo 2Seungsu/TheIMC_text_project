@@ -14,9 +14,11 @@
 #### 🔷 라이브러리
 <p>python=3.8.18</p>
 <p>tensorflow matplotlib konlpy beautifulsoup4 scikit-learn mariadb flask pandas seaborn wordcloud jupyter lab pyLDAvis tqdm sumy torch transformers sqlalchemy transformers[torch] accelerate -U koreanize_matplotlib</p>
+<br>
 
 #### 🗞️ 데이터 출저
 <p>빅카인즈 뉴스 데이터 수집 후 부족한 뉴스 데이터 크롤링</p>
+<br>
 
 #### 🪧팀 역할
 ###### 공통
@@ -27,9 +29,11 @@
 - 최성진 : 개발 보조 및 문서 작성
 - 이승수 : 전체 프로젝트 관리
 - 박윤미 : 클라이언트 사이드
+<br>
 
 #### 🗓️ 일정
 2023/10/23 ~ 2023/12/15 
+<br>
 
 #### ☑️ 평가
 - 모델링 과정 중 다양한 벡터화, 모델학습 기법 사용 부족, GPU 사용과 시간 제한 
