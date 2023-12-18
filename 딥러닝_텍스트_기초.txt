@@ -1,0 +1,127 @@
+텍스트마이닝에서 딥러닝을 선호하는 이유 :
+1. 텍스트의 복잡한 의미와 구조를 분석하기 용이, 특징과 패턴 효과적으로 분석
+2. 긴 문맥과 의존성이 있는 텍스트의 경우 rnn,lstm 등 장기의존성 모델이 적합함
+
+---------------------------------------------------------------------------------------------------------------------
+
+보통 squential 모델 사용(텍스트는 squency데이터이기 때문), 분석가의 성향에 따라 non_seqeuncy로 할 수는 있음
+자연어 처리에서의 sequency, non_sequency 모델 차이점
+
+RNN, LSTM
+텍스트의 복잡한 의미와 구조를 분석하기 용이, 특징과 패턴 효과적으로 분석
+긴 문맥과 의존성이 있는 텍스트의 경우 rnn,lstm 등 장기의존성 모델이 적합함
+
+
+CNN
+RNN이 단어의 입력 순서를 중요하게 반영한다면 CNN은 문장의 지역 정보를 보존하면서 각 문장 성분의 등장 정보를 학습에 반영하는 구조이다. 
+학습할 때 각 필터 크기를 조절하면서 언어의 특징 값을 추출하게 되는데, 기존의 n-gram방식과 유사하다고 볼 수 있다.
+컨볼루션 1D사용이유 : 2D 컨볼루션이 이미지의 공간 계층을 캡처하는 것처럼 1D 컨볼루션은 시퀀스의 로컬 패턴과 구조를 캡처함
+
+
+
+
+활성화 함수 주요특징
+relu는 은닉층에 많이 사용하는 이유 : 시그모이드는 0과 1사이로 출력해서 기울기 소실 가능성 따라서 , relu를 사용해서 기울기소실을 막아서 함수의 기능을 할 수 있게함
+tanh는 경사하강법에 주로 사용, 범위가 -1~1이므로 양수나 음수 모두 나올수 있음
+-------------------------------------------------------------------------------------------------------------------
+
+딥러닝모델은 ANN(=인공신경망)을 사용해서 다양한 레이어를 구성
+입력층 (Input Layer):
+입력층은 모델의 첫 번째 레이어로, 모델에 데이터를 제공하는 역할을 합니다.
+입력층의 뉴런(노드) 수는 입력 데이터의 특성 수와 일치해야 합니다. 각 뉴런은 입력 데이터의 하나의 특성을 나타냅니다.
+자연어 처리에서는 각 단어나 토큰을 나타내는 입력 뉴런이 있을 수 있습니다.
+은닉층 (Hidden Layer):
+은닉층은 입력층과 출력층 사이에 있는 중간 레이어로, 모델이 데이터의 특징을 학습하고 표현하는 곳입니다. 은닉층을 여러 개 쌓을 수 있습니다.
+각 은닉층은 여러 개의 뉴런으로 구성되며, 이들 간에 가중치와 활성화 함수를 사용하여 정보를 전달하고 처리합니다.
+출력층 (Output Layer):
+출력층은 모델의 최종 결과를 제공하는 부분입니다. 모델이 예측하거나 분류해야 하는 결과에 따라 출력층의 구조가 달라집니다.
+회귀 문제의 경우, 하나의 출력 뉴런을 사용하여 linear와 같은 연속적인 값을 예측합니다.
+분류 문제의 경우, 출력 뉴런 수는 클래스 또는 범주의 수와 일치하며, 소프트맥스나 시그모이드 활성화 함수를 사용하여 결과를 출력합니다.
+
+
+----------------------------------------------------------------------------------------------------------------------
+활성화 함수 종류
+1. 시그모이드 
+시그모이드 함수는 입력을 0과 1 사이의 값으로 변환합니다. 주로 이진 분류 문제에서 출력층에 사용됩니다.
+
+2. 하이퍼볼릭 탄젠트  
+탄젠트 함수는 입력을 -1과 1 사이의 값으로 변환합니다. 시그모이드 함수와 유사하지만 출력 범위가 더 넓습니다.
+
+3. 렐루 함수 (Rectified Linear Unit, ReLU)
+입력이 양수인 경우 입력 값을 그대로 반환하고, 음수인 경우 0으로 변환. 은닉층에 주로 사용
+
+
+3. 소프트맥스 
+다중 클래스 분류 문제에서 각 클래스에 대한 확률 분포를 생성, 다중 분류 문제에서 출력층에 주로 사용
+
+
+-------------------------------------------------------------------------------------------------------------------------
+#### 전처리 후 모델링 코드 예시
+from sklearn.model_selection import train_test_split
+trainX, testX, trainy, testy = train_test_split(X, y, test_size= 0.2, random_state= 42, stratify=y)
+# 토큰화, 벡터화 
+# num_words에 지정된 만큼만 숫자로 반환, 나머지는 0으로 반환     
+from keras import preprocessing
+tokenizer = preprocessing.text.Tokenizer(num_words=vocab_size, oov_token="<oov>")    # oov_tok을 사용하여 사전에 없는 단어집합을 만듬
+tokenizer
+tokenizer.fit_on_texts(trainX)
+train_seqiences = tokenizer.texts_to_sequences(trainX)
+test_seqiences = tokenizer.texts_to_sequences(testX)
+
+
+# 패딩 - 텍스트가 기므로 앞을 자를건지 뒤를 자를건지 선택
+from keras.utils import pad_sequences
+max_len = 500        # 패딩 길이 : 몇개를 자를건지
+pad_type = 'pre'     # 패딩 앞 pre, 패딩 뒤 post
+trainX_sp = pad_sequences(train_seqiences,padding='post', maxlen=max_len)
+testX_sp = pad_sequences(test_seqiences,padding='post', maxlen=max_len)
+
+
+# 모델 구성하기
+from keras import Sequential
+from keras.layers import Dense, Embedding, Bidirectional, LSTM, Dropout, BatchNormalization
+
+
+# 임베딩 - 텍스트가 기므로 주요한 특성을 가진 토큰만 뽑기위한 작업
+embedding_dim = 64   # 단어를 표현하는 벡터의 차원, 클수록 모델성능좋음, 오래걸림
+vocab_size = 10000   # 단어갯수
+max_len = 500        # 패딩길이 
+
+
+# 분류될 예측값의 종류 갯수 = 출력층 
+n_class = trainy.shape[1]
+
+# Sequential 모델 
+model = Sequential([
+    Embedding(vocab_size, embedding_dim, input_length = max_len),
+    Bidirectional(LSTM(64 , return_sequences = True)),          # return_sequences=True : 모든 타임스텝 반영, 주로 시퀀스 데이터를 다루는 작업에 사용 
+    BatchNormalization(),                       # 신경망의 학습을 안정화시키고 속도를 높이는 데 도움이 되는 레이어로 뒤 레이어의 출력을 정규화
+    Bidirectional(LSTM(32)),                    # return_sequences=False : 기본값False, 마직막 타임스텝 반영
+    Dense(16, activation = 'relu'),             
+    Dense(n_class, activation = 'softmax')
+])
+
+# 모델 컴파일
+model.compile(loss = 'categorical_crossentropy',          # loss 종류 binary_crossentropy, sparse_crossentropy
+             optimizer = 'adam',
+             metrics = ['accuracy'])
+
+from keras.callbacks import EarlyStopping
+early_stop = EarlyStopping(monitor='val_loss', patience = 5)
+from keras.callbacks import ModelCheckpoint
+
+# 저장될 모델 파일 이름
+model_checkpoint = ModelCheckpoint('best_model.h5', 
+                                   save_best_only=True,   # 가장 좋은 모델만 저장
+                                   monitor='val_loss',    # 모니터링할 지표
+                                   mode='min',            # 지표가 감소해야 가장 좋은 모델로 간주
+                                   min_delta=0.005,       # 성능의 작은 변화 허용
+                                   verbose=1)             # 저장시 로그 출력
+
+# 모델 훈련 시 ModelCheckpoint 콜백을 사용
+history = model.fit(trainX_sp, trainy, batch_size=64, 
+                    callbacks=[early_stop, model_checkpoint], 
+                    verbose=1,
+                    validation_split=0.2, 
+                    use_multiprocessing=True, 
+                    epochs=10)
